@@ -114,7 +114,7 @@ export default function Overlay() {
                                 Building Products
                             </span>
                             <br />
-                            <span className="bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] bg-clip-text text-transparent">
+                            <span className="bg-gradient-to-r from-[#00BFFF] to-[#40E0D0] bg-clip-text text-transparent">
                                 & Scalable Systems
                             </span>
                         </motion.h1>
@@ -124,7 +124,7 @@ export default function Overlay() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.9, duration: 0.8 }}
                         >
-                            Enterprise middleware by day. <span className="text-[#f59e0b]">SaaS products</span> by passion.
+                            Enterprise middleware by day. <span className="text-[#00BFFF]">SaaS products</span> by passion.
                         </motion.p>
 
                         {/* CTA Buttons */}
@@ -136,7 +136,7 @@ export default function Overlay() {
                         >
                             <motion.button
                                 onClick={() => handleScrollTo("#products")}
-                                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/30"
+                                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#00BFFF] to-[#40E0D0] px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-violet-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/30"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
@@ -169,15 +169,15 @@ export default function Overlay() {
                     parallaxSpeed={0.25}
                 >
                     <div className="max-w-2xl">
-                        <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-[#8b5cf6]">
-                            Product Builder
+                        <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-[#00BFFF]">
+                            Product Engineer
                         </p>
                         <h2 className="text-4xl font-semibold leading-snug text-white md:text-5xl lg:text-6xl">
-                            Shipping{" "}
+                            Transforming ideas{" "}
                             <span className="bg-gradient-to-r from-[#f59e0b] to-[#fbbf24] bg-clip-text text-transparent">
-                                real products
+                                into high-quality
                             </span>{" "}
-                            to users.
+                            software solutions.
                         </h2>
                     </div>
                 </TextSection>

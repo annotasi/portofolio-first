@@ -185,8 +185,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                 {/* Type Badge */}
                 <div className="absolute right-4 top-4">
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${project.type === "enterprise"
-                            ? "bg-orange-500/20 text-orange-400"
-                            : "bg-emerald-500/20 text-emerald-400"
+                        ? "bg-orange-500/20 text-orange-400"
+                        : "bg-emerald-500/20 text-emerald-400"
                         }`}>
                         {project.type === "enterprise" ? "Enterprise" : "Open Source"}
                     </span>

@@ -30,8 +30,8 @@ const products: SaaSProduct[] = [
             "Full-text search & filters",
         ],
         status: "live",
-        gradient: "from-violet-600 to-purple-700",
-        accentColor: "#8b5cf6",
+        gradient: "from-blue-600 to-cyan-700",
+        accentColor: "#00BFFF",
         techStack: ["Next.js", "NestJS", "PostgreSQL", "Chrome Extension"],
         liveUrl: "https://atbookmark.annotasi.com",
         icon: (
@@ -209,12 +209,12 @@ export default function SaaSVentures() {
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-[#8b5cf6]">
+                    <p className="mb-4 text-sm font-medium uppercase tracking-[0.3em] text-[#00BFFF]">
                         SaaS Ventures
                     </p>
                     <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
                         Products I&apos;m{" "}
-                        <span className="bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+                        <span className="bg-gradient-to-r from-[#00BFFF] to-[#40E0D0] bg-clip-text text-transparent">
                             Building
                         </span>
                     </h2>
@@ -244,7 +244,7 @@ export default function SaaSVentures() {
                             href="https://github.com/annotasi"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[#8b5cf6] transition-colors hover:text-violet-400"
+                            className="text-[#00BFFF] transition-colors hover:text-blue-400"
                         >
                             @annotasi
                         </a>
