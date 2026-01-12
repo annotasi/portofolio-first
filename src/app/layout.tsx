@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import AudioPlayer from "@/components/ui/AudioPlayer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -9,12 +10,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Singgih Pratama | Creative Developer",
-  description: "Bridging design and engineering. Building digital experiences that matter.",
-  keywords: ["creative developer", "portfolio", "frontend", "web development", "design"],
+  title: "Singgih Pratama | Backend Developer & Product Engineer",
+  description: "Building scalable middleware and modern backend systems. Enterprise middleware by day, SaaS products by passion.",
+  keywords: ["backend developer", "portfolio", "java spring", "microservices", "kafka", "product engineer"],
   openGraph: {
-    title: "Singgih Pratama | Creative Developer",
-    description: "Bridging design and engineering. Building digital experiences that matter.",
+    title: "Singgih Pratama | Backend Developer & Product Engineer",
+    description: "Building scalable middleware and modern backend systems. Enterprise middleware by day, SaaS products by passion.",
     type: "website",
   },
 };
@@ -28,6 +29,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} antialiased`}>
         {children}
+        {/* Ambient Audio Player - persists across routes */}
+        <AudioPlayer />
       </body>
     </html>
   );
