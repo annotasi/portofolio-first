@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useScroll, useTransform } from "framer-motion";
 
 // Total number of frames in the sequence
 const FRAME_COUNT = 75;
@@ -14,12 +14,21 @@ const getFramePath = (index: number): string => {
     return `/sequence/frame_${paddedIndex}_delay-${delay}.webp`;
 };
 
-export default function ScrollyCanvas() {
+interface ScrollyCanvasProps {
+    onLoadProgress?: (progress: number) => void;
+    onLoadComplete?: () => void;
+}
+
+export default function ScrollyCanvas({ onLoadProgress, onLoadComplete }: ScrollyCanvasProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [images, setImages] = useState<HTMLImageElement[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [loadProgress, setLoadProgress] = useState(0);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    // Cache for canvas dimensions to avoid recalculation
+    const dimensionsRef = useRef({ width: 0, height: 0 });
+    // Throttle resize with requestAnimationFrame
+    const resizeRafRef = useRef<number | null>(null);
 
     // Track scroll progress within the container
     const { scrollYProgress } = useScroll({
@@ -32,19 +41,22 @@ export default function ScrollyCanvas() {
 
     // Preload all images
     useEffect(() => {
+        const abortController = new AbortController();
+        let loaded = 0;
+
         const loadImages = async () => {
             const imagePromises: Promise<HTMLImageElement>[] = [];
-            let loaded = 0;
 
             for (let i = 0; i < FRAME_COUNT; i++) {
                 const promise = new Promise<HTMLImageElement>((resolve, reject) => {
                     const img = new Image();
                     img.onload = () => {
                         loaded++;
-                        setLoadProgress(Math.round((loaded / FRAME_COUNT) * 100));
+                        const progress = Math.round((loaded / FRAME_COUNT) * 100);
+                        onLoadProgress?.(progress);
                         resolve(img);
                     };
-                    img.onerror = reject;
+                    img.onerror = () => reject(new Error(`Failed to load frame ${i}`));
                     img.src = getFramePath(i);
                 });
                 imagePromises.push(promise);
@@ -52,15 +64,22 @@ export default function ScrollyCanvas() {
 
             try {
                 const loadedImages = await Promise.all(imagePromises);
-                setImages(loadedImages);
-                setIsLoading(false);
+                if (!abortController.signal.aborted) {
+                    setImages(loadedImages);
+                    setIsLoaded(true);
+                    onLoadComplete?.();
+                }
             } catch (error) {
                 console.error("Failed to load images:", error);
             }
         };
 
         loadImages();
-    }, []);
+
+        return () => {
+            abortController.abort();
+        };
+    }, [onLoadProgress, onLoadComplete]);
 
     // Draw image on canvas with cover-fit logic
     const drawFrame = useCallback(
@@ -71,9 +90,18 @@ export default function ScrollyCanvas() {
 
             if (!canvas || !ctx || !img) return;
 
-            // Set canvas to full viewport size
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // Only resize canvas if dimensions changed (performance optimization)
+            if (
+                dimensionsRef.current.width !== windowWidth ||
+                dimensionsRef.current.height !== windowHeight
+            ) {
+                canvas.width = windowWidth;
+                canvas.height = windowHeight;
+                dimensionsRef.current = { width: windowWidth, height: windowHeight };
+            }
 
             // Calculate cover-fit dimensions
             const imgRatio = img.width / img.height;
@@ -115,15 +143,26 @@ export default function ScrollyCanvas() {
         // Draw initial frame
         drawFrame(0);
 
-        // Handle window resize
+        // Handle window resize with throttling
         const handleResize = () => {
-            drawFrame(frameIndex.get());
+            // Cancel any pending RAF
+            if (resizeRafRef.current) {
+                cancelAnimationFrame(resizeRafRef.current);
+            }
+            // Schedule new RAF
+            resizeRafRef.current = requestAnimationFrame(() => {
+                drawFrame(frameIndex.get());
+            });
         };
-        window.addEventListener("resize", handleResize);
+
+        window.addEventListener("resize", handleResize, { passive: true });
 
         return () => {
             unsubscribe();
             window.removeEventListener("resize", handleResize);
+            if (resizeRafRef.current) {
+                cancelAnimationFrame(resizeRafRef.current);
+            }
         };
     }, [images, frameIndex, drawFrame]);
 
@@ -135,30 +174,12 @@ export default function ScrollyCanvas() {
         >
             {/* Sticky Canvas Container */}
             <div className="sticky top-0 h-screen w-full overflow-hidden">
-                {/* Loading Screen */}
-                {isLoading && (
-                    <motion.div
-                        className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#121212]"
-                        initial={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                    >
-                        <div className="relative mb-4 h-1 w-48 overflow-hidden rounded-full bg-white/10">
-                            <motion.div
-                                className="absolute left-0 top-0 h-full bg-gradient-to-r from-[#ff6b35] to-[#4a9eff]"
-                                style={{ width: `${loadProgress}%` }}
-                                transition={{ duration: 0.1 }}
-                            />
-                        </div>
-                        <p className="text-sm text-white/50">Loading experience... {loadProgress}%</p>
-                    </motion.div>
-                )}
-
                 {/* Canvas */}
                 <canvas
                     ref={canvasRef}
                     className="h-full w-full"
                     style={{
-                        opacity: isLoading ? 0 : 1,
+                        opacity: isLoaded ? 1 : 0,
                         transition: "opacity 0.5s ease-out",
                     }}
                 />
